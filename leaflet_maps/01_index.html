@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<base target="_top">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<title>Mobile tutorial - Leaflet</title>
+
+	<link rel="stylesheet" href="vendors/w3css/w3.css" />
+
+	<link rel="stylesheet" href="vendors/fontawesome/css/fontawesome.css" />
+	<link rel="stylesheet" href="vendors/fontawesome/css/brands.css" />
+	<link rel="stylesheet" href="vendors/fontawesome/css/solid.css" />
+	<link rel="stylesheet" href="vendors/fontawesome/css/regular.css" />
+
+    <link rel="stylesheet" href="vendors/leaflet/leaflet.css" />
+    <script src="vendors/leaflet/leaflet.js" ></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#attributions {
+			margin-top: 3px;
+		}
+		body { 
+			padding: 0; margin: 0; 
+		} 
+		#map { 
+			height: 580px; width: 100vw; 
+			max-width: 100%;
+			max-height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id='map'>[Loading the map...]</div>
+<div id="attributions">
+	<button onclick="myFunction('atts')" class="w3-btn w3-block w3-teal w3-left-align">Attributions</button>
+	<div id="atts" class="w3-container w3-light-grey w3-hide">
+		<ul>
+			<li><a href="https://www.flaticon.com/free-icons/location-pin" title="location pin icons">Location pin icons created by Smashicons - Flaticon</a></li>
+			<li><a href="https://www.flaticon.com/free-icons/map-point" title="map-point icons">Map-point icons created by Smashicons - Flaticon</a></li>
+			<li><a href="https://www.flaticon.com/free-icons/pin" title="pin icons">Pin icons created by Smashicons - Flaticon</a></li>
+		</ul>
+	</div>
+</div>
+
+<script>
+	function myFunction(id) {
+	  var x = document.getElementById(id);
+	  if (x.className.indexOf("w3-show") == -1) {
+		x.className += " w3-show";
+	  } else { 
+		x.className = x.className.replace(" w3-show", "");
+	  }
+	}
+</script>
+
+<script>
+	// Iconset
+	const fontAwesomeIcon = L.divIcon({
+		html: '<i class="fa-solid fa-map-pin"></i>',
+		iconSize: [50, 50],
+		className: 'myDivIcon'
+	});
+	const redIcon = new L.Icon({
+		iconUrl: './images/maps/pin_red.png',
+		iconSize: [35, 35],
+		popupAnchor: [1, -5]
+	});
+	const blueIcon = new L.Icon({
+		iconUrl: './images/maps/pin_blue.png',
+		iconSize: [35, 35],
+		popupAnchor: [1, -5]
+	});
+	const blackIcon = new L.Icon({
+		iconUrl: './images/maps/pin_black.png',
+		iconSize: [35, 35],
+		popupAnchor: [1, -5]
+	});
+
+	// Marker Set
+	const places = L.layerGroup();
+	const mPSUPhuket = L.marker([7.894667031705727, 98.35297979572097], {icon: blueIcon})
+		.bindPopup('Prince of Songkla University, Phuket Campus').addTo(places);
+	const mPatongOffice = L.marker([7.8983475687290365, 98.30483984324214], {icon: blackIcon})
+			.bindPopup('Patong Town Municipality Office').addTo(places);
+	
+	// Base Set
+	const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	});
+	const osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+	});
+	
+	const map = L.map('map', {
+		center: [7.980942380134536, 98.36392055691482], // Phuket centroid
+		zoom: 10,
+		layers: [osm, places]
+	});
+
+	const bases = {
+		'OpenStreetMap': osm,
+		'OpenStreetMap.HOT': osmHOT,
+	};
+
+	const overlays = {
+		'Places': places,
+	};
+
+	const layerControl = L.control.layers(bases, overlays, {collapsed: false}).addTo(map);
+	
+</script>
+
+<script src="data/attractions.js"></script>
+<script>
+	
+	/*
+	Load more overlay: 
+	*/
+	const attractions = L.layerGroup();
+	arr_attractions.forEach(element => { // arr_attractions from data/attractions.js
+		var marker = L.marker([element.latitude, element.longitude], {icon: redIcon})
+			.bindPopup(element.name)
+			.addTo(attractions);
+	});
+	
+	layerControl.addOverlay(attractions, 'Attractions');
+</script>
+
+</body>
+</html>
